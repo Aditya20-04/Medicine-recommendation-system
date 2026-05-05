@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Health Care Center</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f2027, #000000, #2c5364);
+            font-family: 'Segoe UI', sans-serif;
+            color: white;
+        }
+
+        .navbar {
+            background: rgba(0,0,0,0.8) !important;
+            backdrop-filter: blur(10px);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+
+        .btn-custom {
+            border-radius: 30px;
+            padding: 10px 25px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-custom:hover {
+            transform: scale(1.05);
+        }
+
+        .result-buttons button {
+            border-radius: 30px;
+            margin: 8px;
+            font-weight: bold;
+        }
+
+        .modal-content {
+            border-radius: 20px;
+        }
+
+        .modal-header {
+            background: linear-gradient(90deg, #141e30, #243b55);
+            color: white;
+        }
+
+        input {
+            border-radius: 20px !important;
+            padding: 12px;
+        }
+
+        h1, h2 {
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="#">🏥 Health Care Center</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link active" href="/">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+                <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+                <li class="nav-item"><a class="nav-link" href="/developer">Developer</a></li>
+                <li class="nav-item"><a class="nav-link" href="/blog">Blog</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Title -->
+<div class="container text-center mt-5">
+    <h1>AI Powered Disease Prediction</h1>
+    <p class="text-light">Enter your symptoms and get instant AI-based suggestions</p>
+</div>
+
+<!-- Form Section -->
+<div class="container mt-4">
+    <div class="glass-card">
+
+        <form action="/predict" method="post">
+
+            <div class="mb-3">
+                <label class="form-label">Enter Symptoms (comma separated)</label>
+                <input type="text" class="form-control" id="symptoms" name="symptoms"
+                       placeholder="itching, headache, vomiting">
+            </div>
+
+            <div class="text-center">
+                <button type="button" id="startSpeechRecognition"
+                        class="btn btn-info btn-custom text-dark">
+                    🎤 Start Speech Recognition
+                </button>
+            </div>
+
+            <div id="transcription" class="mt-3 text-warning text-center"></div>
+
+            {% if message %}
+                <div class="alert alert-danger mt-3 text-center">
+                    {{ message }}
+                </div>
+            {% endif %}
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-danger btn-lg btn-custom">
+                    🔍 Predict Disease
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+{% if predicted_disease %}
+
+<!-- Result Section -->
+<div class="container text-center mt-5">
+    <h2>Prediction Results</h2>
+
+    <div class="result-buttons mt-4">
+        <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#diseaseModal">Disease</button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#descriptionModal">Description</button>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#precautionModal">Precautions</button>
+        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#medicationsModal">Medications</button>
+        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#workoutsModal">Workouts</button>
+        <button class="btn btn-info text-dark" data-bs-toggle="modal" data-bs-target="#dietsModal">Diets</button>
+    </div>
+</div>
+
+{% endif %}
+
+<!-- Disease Modal -->
+<div class="modal fade" id="diseaseModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Predicted Disease</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-dark">
+                {{ predicted_disease }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Description Modal -->
+<div class="modal fade" id="descriptionModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Description</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-dark">
+                {{ dis_des }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Precautions Modal -->
+<div class="modal fade" id="precautionModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Precautions</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-dark">
+                <ul>
+                    {% for i in my_precautions %}
+                        <li>{{ i }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Medications Modal -->
+<div class="modal fade" id="medicationsModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Medications</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-dark">
+                <ul>
+                    {% for i in medications %}
+                        <li>{{ i }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Workouts Modal -->
+<div class="modal fade" id="workoutsModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Workouts</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-dark">
+                <ul>
+                    {% for i in workout %}
+                        <li>{{ i }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Diet Modal -->
+<div class="modal fade" id="dietsModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Diets</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-dark">
+                <ul>
+                    {% for i in my_diet %}
+                        <li>{{ i }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Speech Recognition -->
+<script>
+const btn = document.getElementById('startSpeechRecognition');
+const transcriptionDiv = document.getElementById('transcription');
+const symptomsInput = document.getElementById('symptoms');
+
+btn.addEventListener('click', function () {
+    const recognition = new webkitSpeechRecognition();
+    recognition.lang = 'en-US';
+
+    recognition.onresult = function (event) {
+        const result = event.results[0][0].transcript;
+        transcriptionDiv.textContent = result;
+        symptomsInput.value = result;
+    };
+
+    recognition.start();
+});
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
